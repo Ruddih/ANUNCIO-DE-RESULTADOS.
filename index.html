@@ -12,7 +12,21 @@
 <body>
     <div id="root"></div>
     <script type="text/babel">
-const { useState } = React;
+const { useState, useCallback } = React;
+
+const Input = ({label, name, value, onChange, placeholder, type = "text"}) => (
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
+    <input 
+      type={type} 
+      name={name} 
+      value={value} 
+      onChange={onChange} 
+      placeholder={placeholder}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
+    />
+  </div>
+);
 
 const AnuncioResultados = () => {
   const [tipoComite, setTipoComite] = useState('multiple');
@@ -45,15 +59,16 @@ const AnuncioResultados = () => {
   const [textoGenerado, setTextoGenerado] = useState('');
   const [mostrarTexto, setMostrarTexto] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
-  const calcularPorcentaje = (votos, total) => {
+  const calcularPorcentaje = useCallback((votos, total) => {
     return total && votos ? ((votos / total) * 100).toFixed(1) : '___';
-  };
+  }, []);
 
-  const generarTexto = () => {
+  const generarTexto = useCallback(() => {
     const participacion = calcularPorcentaje(formData.totalVotos, formData.totalVotantes);
     
     let texto = tipoComite === 'multiple' ? 
@@ -222,29 +237,22 @@ NIT ${formData.nit}`;
 
     setTextoGenerado(texto);
     setMostrarTexto(true);
-  };
+  }, [formData, tipoComite, calcularPorcentaje]);
 
-  const copiarTexto = () => {
+  const copiarTexto = useCallback(() => {
     navigator.clipboard.writeText(textoGenerado);
     alert('✅ Texto copiado. Pégalo en Word con Ctrl+V');
-  };
+  }, [textoGenerado]);
 
-  const descargarTxt = () => {
+  const descargarTxt = useCallback(() => {
     const blob = new Blob([textoGenerado], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `Resultados_CCL_${formData.empresa.replace(/\s+/g, '_')}.txt`;
     a.click();
-  };
-
-  const Input = ({label, name, value, placeholder, type = "text"}) => (
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
-      <input type={type} name={name} value={value} onChange={handleChange} placeholder={placeholder}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" />
-    </div>
-  );
+    URL.revokeObjectURL(url);
+  }, [textoGenerado, formData.empresa]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6">
@@ -280,14 +288,14 @@ NIT ${formData.nit}`;
           <div className="mb-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Datos Generales</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <Input label="Nombre de la Empresa" name="empresa" value={formData.empresa} />
-              <Input label="NIT" name="nit" value={formData.nit} />
-              <Input label="Ciudad" name="ciudad" value={formData.ciudad} />
-              <Input label="Fecha del Anuncio" name="fechaAnuncio" value={formData.fechaAnuncio} placeholder="Ej: 15 de enero de 2025" />
-              <Input label="Fecha de la Elección" name="fechaEleccion" value={formData.fechaEleccion} placeholder="Ej: 12 de enero de 2025" />
-              <Input label="Fecha Inicio de Funciones" name="fechaInicioFunciones" value={formData.fechaInicioFunciones} placeholder="Ej: 16 de enero de 2025" />
-              <Input label="Total Trabajadores Votantes" name="totalVotantes" value={formData.totalVotantes} type="number" placeholder="Ej: 25" />
-              <Input label="Total Votos Emitidos" name="totalVotos" value={formData.totalVotos} type="number" placeholder="Ej: 23" />
+              <Input label="Nombre de la Empresa" name="empresa" value={formData.empresa} onChange={handleChange} />
+              <Input label="NIT" name="nit" value={formData.nit} onChange={handleChange} />
+              <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={handleChange} />
+              <Input label="Fecha del Anuncio" name="fechaAnuncio" value={formData.fechaAnuncio} onChange={handleChange} placeholder="Ej: 15 de enero de 2025" />
+              <Input label="Fecha de la Elección" name="fechaEleccion" value={formData.fechaEleccion} onChange={handleChange} placeholder="Ej: 12 de enero de 2025" />
+              <Input label="Fecha Inicio de Funciones" name="fechaInicioFunciones" value={formData.fechaInicioFunciones} onChange={handleChange} placeholder="Ej: 16 de enero de 2025" />
+              <Input label="Total Trabajadores Votantes" name="totalVotantes" value={formData.totalVotantes} onChange={handleChange} type="number" placeholder="Ej: 25" />
+              <Input label="Total Votos Emitidos" name="totalVotos" value={formData.totalVotos} onChange={handleChange} type="number" placeholder="Ej: 23" />
             </div>
           </div>
 
@@ -296,19 +304,19 @@ NIT ${formData.nit}`;
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Principal Electo</h3>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Input label="Nombre Completo" name="nombrePrincipal" value={formData.nombrePrincipal} />
-                  <Input label="Cédula" name="cedulaPrincipal" value={formData.cedulaPrincipal} />
-                  <Input label="Cargo" name="cargoPrincipal" value={formData.cargoPrincipal} />
-                  <Input label="Votos Obtenidos" name="votosPrincipal" value={formData.votosPrincipal} type="number" />
+                  <Input label="Nombre Completo" name="nombrePrincipal" value={formData.nombrePrincipal} onChange={handleChange} />
+                  <Input label="Cédula" name="cedulaPrincipal" value={formData.cedulaPrincipal} onChange={handleChange} />
+                  <Input label="Cargo" name="cargoPrincipal" value={formData.cargoPrincipal} onChange={handleChange} />
+                  <Input label="Votos Obtenidos" name="votosPrincipal" value={formData.votosPrincipal} onChange={handleChange} type="number" />
                 </div>
               </div>
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Suplente Electo</h3>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Input label="Nombre Completo" name="nombreSuplente" value={formData.nombreSuplente} />
-                  <Input label="Cédula" name="cedulaSuplente" value={formData.cedulaSuplente} />
-                  <Input label="Cargo" name="cargoSuplente" value={formData.cargoSuplente} />
-                  <Input label="Votos Obtenidos" name="votosSuplente" value={formData.votosSuplente} type="number" />
+                  <Input label="Nombre Completo" name="nombreSuplente" value={formData.nombreSuplente} onChange={handleChange} />
+                  <Input label="Cédula" name="cedulaSuplente" value={formData.cedulaSuplente} onChange={handleChange} />
+                  <Input label="Cargo" name="cargoSuplente" value={formData.cargoSuplente} onChange={handleChange} />
+                  <Input label="Votos Obtenidos" name="votosSuplente" value={formData.votosSuplente} onChange={handleChange} type="number" />
                 </div>
               </div>
             </>
@@ -316,10 +324,10 @@ NIT ${formData.nit}`;
             <div className="mb-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4">Representante de los Trabajadores Electo</h3>
               <div className="grid md:grid-cols-2 gap-6">
-                <Input label="Nombre Completo" name="nombreRepresentante" value={formData.nombreRepresentante} />
-                <Input label="Cédula" name="cedulaRepresentante" value={formData.cedulaRepresentante} />
-                <Input label="Cargo" name="cargoRepresentante" value={formData.cargoRepresentante} />
-                <Input label="Votos Obtenidos" name="votosRepresentante" value={formData.votosRepresentante} type="number" />
+                <Input label="Nombre Completo" name="nombreRepresentante" value={formData.nombreRepresentante} onChange={handleChange} />
+                <Input label="Cédula" name="cedulaRepresentante" value={formData.cedulaRepresentante} onChange={handleChange} />
+                <Input label="Cargo" name="cargoRepresentante" value={formData.cargoRepresentante} onChange={handleChange} />
+                <Input label="Votos Obtenidos" name="votosRepresentante" value={formData.votosRepresentante} onChange={handleChange} type="number" />
               </div>
             </div>
           )}
@@ -327,9 +335,9 @@ NIT ${formData.nit}`;
           <div className="mb-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Designado por el Empleador</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <Input label="Nombre Completo" name="nombreEmpleador" value={formData.nombreEmpleador} />
-              <Input label="Cédula" name="cedulaEmpleador" value={formData.cedulaEmpleador} />
-              <Input label="Cargo" name="cargoEmpleador" value={formData.cargoEmpleador} />
+              <Input label="Nombre Completo" name="nombreEmpleador" value={formData.nombreEmpleador} onChange={handleChange} />
+              <Input label="Cédula" name="cedulaEmpleador" value={formData.cedulaEmpleador} onChange={handleChange} />
+              <Input label="Cargo" name="cargoEmpleador" value={formData.cargoEmpleador} onChange={handleChange} />
             </div>
           </div>
 
