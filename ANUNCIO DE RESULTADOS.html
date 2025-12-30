@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador Anuncio Resultados CCL</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState } = React;
+
+const AnuncioResultados = () => {
+  const [tipoComite, setTipoComite] = useState('multiple');
+  const [formData, setFormData] = useState({
+    empresa: 'ZAGO DISEÑO S.A.S.',
+    nit: '900.873.999-2',
+    ciudad: 'Santiago de Cali',
+    fechaAnuncio: '',
+    fechaEleccion: '',
+    totalVotantes: '',
+    totalVotos: '',
+    nombrePrincipal: '',
+    cedulaPrincipal: '',
+    cargoPrincipal: '',
+    votosPrincipal: '',
+    nombreSuplente: '',
+    cedulaSuplente: '',
+    cargoSuplente: '',
+    votosSuplente: '',
+    nombreRepresentante: '',
+    cedulaRepresentante: '',
+    cargoRepresentante: '',
+    votosRepresentante: '',
+    nombreEmpleador: '',
+    cedulaEmpleador: '',
+    cargoEmpleador: '',
+    fechaInicioFunciones: ''
+  });
+
+  const [textoGenerado, setTextoGenerado] = useState('');
+  const [mostrarTexto, setMostrarTexto] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const calcularPorcentaje = (votos, total) => {
+    return total && votos ? ((votos / total) * 100).toFixed(1) : '___';
+  };
+
+  const generarTexto = () => {
+    const participacion = calcularPorcentaje(formData.totalVotos, formData.totalVotantes);
+    
+    let texto = tipoComite === 'multiple' ? 
+`COMUNICADO OFICIAL - RESULTADOS DE LA ELECCIÓN DE REPRESENTANTES DE LOS TRABAJADORES ANTE EL COMITÉ DE CONVIVENCIA LABORAL
+
+${formData.ciudad}, ${formData.fechaAnuncio}
+
+${formData.empresa}, identificada con NIT ${formData.nit}, en cumplimiento de la Ley 1010 de 2006, la Ley 2466 de 2025 y la Resolución 3461 de 2025, comunica oficialmente los resultados del proceso democrático de elección de representantes de los trabajadores ante el Comité de Convivencia Laboral.
+
+SOBRE EL PROCESO ELECTORAL
+
+El proceso electoral se desarrolló el día ${formData.fechaEleccion}, mediante votación secreta, garantizando la expresión libre, espontánea y auténtica de todos los trabajadores, conforme a los principios de transparencia, imparcialidad y participación democrática.
+
+PARTICIPACIÓN ELECTORAL
+
+• Total de trabajadores habilitados: ${formData.totalVotantes}
+• Total de votos válidos: ${formData.totalVotos}
+• Participación electoral: ${participacion}%
+
+RESULTADOS OFICIALES
+
+REPRESENTANTE PRINCIPAL DE LOS TRABAJADORES
+
+Nombre: ${formData.nombrePrincipal}
+Cédula: ${formData.cedulaPrincipal}
+Cargo: ${formData.cargoPrincipal}
+Votos: ${formData.votosPrincipal} (${calcularPorcentaje(formData.votosPrincipal, formData.totalVotos)}%)
+
+REPRESENTANTE SUPLENTE DE LOS TRABAJADORES
+
+Nombre: ${formData.nombreSuplente}
+Cédula: ${formData.cedulaSuplente}
+Cargo: ${formData.cargoSuplente}
+Votos: ${formData.votosSuplente} (${calcularPorcentaje(formData.votosSuplente, formData.totalVotos)}%)
+
+DESIGNACIÓN DEL EMPLEADOR
+
+REPRESENTANTE DEL EMPLEADOR
+
+Nombre: ${formData.nombreEmpleador}
+Cédula: ${formData.cedulaEmpleador}
+Cargo: ${formData.cargoEmpleador}
+
+CONFORMACIÓN OFICIAL DEL COMITÉ
+
+El Comité de Convivencia Laboral queda conformado por:
+
+Por parte de los trabajadores:
+• Principal: ${formData.nombrePrincipal}
+• Suplente: ${formData.nombreSuplente}
+
+Por parte del empleador:
+• Principal: ${formData.nombreEmpleador}
+• Suplente: [Pendiente de designación]
+
+PERÍODO DE VIGENCIA
+
+Dos (2) años a partir del ${formData.fechaInicioFunciones}.
+
+FUNCIONES DEL COMITÉ
+
+1. Recibir y tramitar quejas de acoso laboral, discriminación y violencia de género.
+2. Promover diálogo, conciliación y relaciones laborales armónicas.
+3. Examinar casos de manera confidencial.
+4. Escuchar a las partes involucradas.
+5. Crear espacios de diálogo entre las partes.
+6. Formular planes de mejora concertados.
+7. Hacer seguimiento a compromisos.
+8. Mantener reserva sobre la información.
+9. Elaborar informes trimestrales.
+
+COMPROMISO INSTITUCIONAL
+
+${formData.empresa} ratifica su compromiso con ambientes laborales dignos, respetuosos y libres de acoso, discriminación y violencia, garantizando derechos humanos y dignidad de todos los trabajadores.
+
+AGRADECIMIENTOS
+
+Agradecemos a todos los trabajadores que participaron en este proceso democrático. Felicitamos a los representantes electos y les deseamos éxito en sus funciones.
+
+CONTACTO
+
+• Representante Principal: ${formData.nombrePrincipal}
+• Representante Empleador: ${formData.nombreEmpleador}
+• Área de Talento Humano
+
+Atentamente,
+
+GERENCIA GENERAL
+${formData.empresa}
+NIT ${formData.nit}` : 
+`COMUNICADO OFICIAL - RESULTADOS DE LA ELECCIÓN DEL REPRESENTANTE DE LOS TRABAJADORES ANTE EL COMITÉ DE CONVIVENCIA LABORAL
+
+${formData.ciudad}, ${formData.fechaAnuncio}
+
+${formData.empresa}, identificada con NIT ${formData.nit}, en cumplimiento de la Ley 1010 de 2006, la Ley 2466 de 2025 y la Resolución 3461 de 2025, comunica oficialmente los resultados del proceso democrático de elección del representante de los trabajadores ante el Comité de Convivencia Laboral.
+
+SOBRE EL PROCESO ELECTORAL
+
+El proceso electoral se desarrolló el día ${formData.fechaEleccion}, mediante votación secreta, garantizando la expresión libre, espontánea y auténtica de todos los trabajadores, conforme a los principios de transparencia, imparcialidad y participación democrática.
+
+PARTICIPACIÓN ELECTORAL
+
+• Total de trabajadores habilitados: ${formData.totalVotantes}
+• Total de votos válidos: ${formData.totalVotos}
+• Participación electoral: ${participacion}%
+
+RESULTADOS OFICIALES
+
+REPRESENTANTE DE LOS TRABAJADORES
+
+Nombre: ${formData.nombreRepresentante}
+Cédula: ${formData.cedulaRepresentante}
+Cargo: ${formData.cargoRepresentante}
+Votos: ${formData.votosRepresentante} (${calcularPorcentaje(formData.votosRepresentante, formData.totalVotos)}%)
+
+DESIGNACIÓN DEL EMPLEADOR
+
+REPRESENTANTE DEL EMPLEADOR
+
+Nombre: ${formData.nombreEmpleador}
+Cédula: ${formData.cedulaEmpleador}
+Cargo: ${formData.cargoEmpleador}
+
+CONFORMACIÓN OFICIAL DEL COMITÉ
+
+Conforme a la Resolución 3461 de 2025, para empresas con menos de cinco (5) trabajadores, el Comité queda conformado por dos (2) integrantes:
+
+• Representante de los Trabajadores: ${formData.nombreRepresentante}
+• Representante del Empleador: ${formData.nombreEmpleador}
+
+PERÍODO DE VIGENCIA
+
+Dos (2) años a partir del ${formData.fechaInicioFunciones}.
+
+FUNCIONES DEL COMITÉ
+
+1. Recibir y tramitar quejas de acoso laboral, discriminación y violencia de género.
+2. Promover diálogo, conciliación y relaciones laborales armónicas.
+3. Examinar casos de manera confidencial.
+4. Escuchar a las partes involucradas.
+5. Crear espacios de diálogo entre las partes.
+6. Formular planes de mejora concertados.
+7. Hacer seguimiento a compromisos.
+8. Mantener reserva sobre la información.
+9. Elaborar informes trimestrales.
+
+COMPROMISO INSTITUCIONAL
+
+${formData.empresa} ratifica su compromiso con ambientes laborales dignos, respetuosos y libres de acoso, discriminación y violencia, garantizando derechos humanos y dignidad de todos los trabajadores.
+
+AGRADECIMIENTOS
+
+Agradecemos a todos los trabajadores que participaron en este proceso democrático. Felicitamos al representante electo y le deseamos éxito en sus funciones.
+
+CONTACTO
+
+• Representante de los Trabajadores: ${formData.nombreRepresentante}
+• Representante del Empleador: ${formData.nombreEmpleador}
+• Área de Talento Humano
+
+Atentamente,
+
+GERENCIA GENERAL
+${formData.empresa}
+NIT ${formData.nit}`;
+
+    setTextoGenerado(texto);
+    setMostrarTexto(true);
+  };
+
+  const copiarTexto = () => {
+    navigator.clipboard.writeText(textoGenerado);
+    alert('✅ Texto copiado. Pégalo en Word con Ctrl+V');
+  };
+
+  const descargarTxt = () => {
+    const blob = new Blob([textoGenerado], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Resultados_CCL_${formData.empresa.replace(/\s+/g, '_')}.txt`;
+    a.click();
+  };
+
+  const Input = ({label, name, value, placeholder, type = "text"}) => (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
+      <input type={type} name={name} value={value} onChange={handleChange} placeholder={placeholder}
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" />
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h1 className="text-3xl font-bold text-gray-800">Generador Anuncio de Resultados CCL</h1>
+          </div>
+          
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-green-800"><strong>📊 Genera el comunicado oficial</strong> con los resultados de la elección</p>
+          </div>
+
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Tipo de Comité</label>
+            <div className="flex gap-4 flex-wrap">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="tipoComite" value="multiple" checked={tipoComite === 'multiple'} 
+                  onChange={(e) => setTipoComite(e.target.value)} className="w-4 h-4" />
+                <span className="text-sm font-medium">Principal + Suplente</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="tipoComite" value="unico" checked={tipoComite === 'unico'} 
+                  onChange={(e) => setTipoComite(e.target.value)} className="w-4 h-4" />
+                <span className="text-sm font-medium">Un solo representante</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Datos Generales</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Input label="Nombre de la Empresa" name="empresa" value={formData.empresa} />
+              <Input label="NIT" name="nit" value={formData.nit} />
+              <Input label="Ciudad" name="ciudad" value={formData.ciudad} />
+              <Input label="Fecha del Anuncio" name="fechaAnuncio" value={formData.fechaAnuncio} placeholder="Ej: 15 de enero de 2025" />
+              <Input label="Fecha de la Elección" name="fechaEleccion" value={formData.fechaEleccion} placeholder="Ej: 12 de enero de 2025" />
+              <Input label="Fecha Inicio de Funciones" name="fechaInicioFunciones" value={formData.fechaInicioFunciones} placeholder="Ej: 16 de enero de 2025" />
+              <Input label="Total Trabajadores Votantes" name="totalVotantes" value={formData.totalVotantes} type="number" placeholder="Ej: 25" />
+              <Input label="Total Votos Emitidos" name="totalVotos" value={formData.totalVotos} type="number" placeholder="Ej: 23" />
+            </div>
+          </div>
+
+          {tipoComite === 'multiple' ? (
+            <>
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Principal Electo</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Input label="Nombre Completo" name="nombrePrincipal" value={formData.nombrePrincipal} />
+                  <Input label="Cédula" name="cedulaPrincipal" value={formData.cedulaPrincipal} />
+                  <Input label="Cargo" name="cargoPrincipal" value={formData.cargoPrincipal} />
+                  <Input label="Votos Obtenidos" name="votosPrincipal" value={formData.votosPrincipal} type="number" />
+                </div>
+              </div>
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Suplente Electo</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Input label="Nombre Completo" name="nombreSuplente" value={formData.nombreSuplente} />
+                  <Input label="Cédula" name="cedulaSuplente" value={formData.cedulaSuplente} />
+                  <Input label="Cargo" name="cargoSuplente" value={formData.cargoSuplente} />
+                  <Input label="Votos Obtenidos" name="votosSuplente" value={formData.votosSuplente} type="number" />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Representante de los Trabajadores Electo</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Input label="Nombre Completo" name="nombreRepresentante" value={formData.nombreRepresentante} />
+                <Input label="Cédula" name="cedulaRepresentante" value={formData.cedulaRepresentante} />
+                <Input label="Cargo" name="cargoRepresentante" value={formData.cargoRepresentante} />
+                <Input label="Votos Obtenidos" name="votosRepresentante" value={formData.votosRepresentante} type="number" />
+              </div>
+            </div>
+          )}
+
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Representante Designado por el Empleador</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Input label="Nombre Completo" name="nombreEmpleador" value={formData.nombreEmpleador} />
+              <Input label="Cédula" name="cedulaEmpleador" value={formData.cedulaEmpleador} />
+              <Input label="Cargo" name="cargoEmpleador" value={formData.cargoEmpleador} />
+            </div>
+          </div>
+
+          <button onClick={generarTexto}
+            className="w-full mt-8 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Generar Documento
+          </button>
+        </div>
+
+        {mostrarTexto && (
+          <div className="bg-white rounded-lg shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Documento Generado
+            </h2>
+            
+            <div className="flex gap-4 mb-6">
+              <button onClick={copiarTexto}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copiar para Word
+              </button>
+              
+              <button onClick={descargarTxt}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Descargar TXT
+              </button>
+            </div>
+
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-h-96 overflow-y-auto">
+              <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono">{textoGenerado}</pre>
+            </div>
+
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-800">
+                <strong>✅ Listo:</strong> Copia el texto y pégalo en Word con Ctrl+V
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<AnuncioResultados />, document.getElementById('root'));
+    </script>
+</body>
+</html>
